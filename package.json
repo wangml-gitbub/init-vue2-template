@@ -52,13 +52,8 @@
       "parser": "@babel/eslint-parser"
     },
     "rules": {
-      "prettier/prettier": [
-        "warn",
-        {
-          "singleQuote": true,
-          "semi": false
-        }
-      ]
+      "semi": [2, "never"],
+      "quotes": [2, "single", {"avoidEscape": true}]
     }
   },
   "browserslist": [
