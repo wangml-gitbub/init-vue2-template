@@ -14,7 +14,7 @@ import { pullData } from '@/api/allApi'
 export default {
   name: 'HomeView',
   components: {
-    HelloWorld,
+    HelloWorld
   },
   mounted() {
     this.pullData() // 测试使用，待删除
@@ -26,10 +26,10 @@ export default {
         project: '550',
         ref: 'batch-resolve-conflict-11-2',
         access_token:
-          'd449e2a23fa00a0c2dc0538631df44579348aa179ca0ea7f1c423c8a17538f59',
+          'd449e2a23fa00a0c2dc0538631df44579348aa179ca0ea7f1c423c8a17538f59'
       })
       console.log(data)
-    },
-  },
+    }
+  }
 }
 </script>

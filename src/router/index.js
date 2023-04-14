@@ -10,20 +10,24 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
+    component: HomeView
   },
   {
     path: '/about',
     name: 'about',
     component: () =>
-      import(/* webpackChunkName: 'about' */ '../views/AboutView.vue'),
+      import(/* webpackChunkName: 'about' */ '../views/AboutView.vue')
   },
+  {
+    path: '*',
+    redirect: '/'
+  }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes,
+  routes
 })
 
 router.beforeEach((to, from, next) => {

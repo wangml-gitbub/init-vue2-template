@@ -10,7 +10,7 @@ let axiosInstance = axios.create({
       ? process.env.VUE_APP_BASE_URL
       : process.env.VUE_APP_REQUEST_URL,
   timeout: 60000,
-  headers: { 'Content-Type': 'application/jsoncharset=utf-8' }, // 默认 json 格式,如果是文件上传或者其他，可以修改 headers: { 'Content-Type': 'multipart/form-data' }
+  headers: { 'Content-Type': 'application/jsoncharset=utf-8' } // 默认 json 格式,如果是文件上传或者其他，可以修改 headers: { 'Content-Type': 'multipart/form-data' }
 })
 
 axiosInstance.interceptors.request.use(
@@ -50,8 +50,8 @@ axiosInstance.interceptors.response.use(
       router.push({
         path: '/login',
         query: {
-          redirect: router.currentRoute.fullPath,
-        },
+          redirect: router.currentRoute.fullPath
+        }
       })
     }
     return Promise.reject(error)
@@ -61,7 +61,7 @@ axiosInstance.interceptors.response.use(
 export function request(options) {
   return new Promise((resolve, reject) => {
     axiosInstance({
-      ...options,
+      ...options
     })
       .then((response) => {
         resolve(response)
