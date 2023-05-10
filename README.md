@@ -78,3 +78,199 @@ module.exports = {
   ]
 }
 ```
+
+## 自定义字体引入
+
+1、UI 提供 . ttf / .otf 字体包，放置工程文件 assets/fonts 文件夹中
+2、工程文件 style 文件夹中新建 font.scss
+
+```scss
+@font-face {
+  font-family: 'zidingyi';
+  src: url('@/assects/font/zdy.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'aaa';
+  src: url('@/assects/font/aaa.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+```
+
+3、工程项目入口文件 main.js 中引入 font.scss
+
+```js
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
+import './styles/font.scss'
+
+Vue.config.productionTip = false
+
+new Vue({
+  router,
+  store,
+  render: (h) => h(App)
+}).$mount('#app')
+```
+
+4、组件样式文件中使用字体包
+
+```css
+<style lang="scss" scoped>
+.dddd {
+  font-size: 14px;
+  font-family: 'zdy';
+  color: #555;
+}
+
+.dddd {
+  font-family: 'aaa';
+  color: #555;
+}
+</style>
+```
+
+## Centrifugo
+
+一、本机安装 Centrifugo
+
+```bash
+# 如果不确定您需要哪个发行版，那么在 Linux 或 MacOS 上，可以使用以下命令将 centrifugo 二进制文件下载并解压到您当前的工作目录
+curl -sSLf https://centrifugal.dev/install.sh | sh
+
+# 查看 Centrifugo 的版本
+./centrifugo version
+
+# Centrifugo 需要一个包含多个密钥的配置文件。如果您是 Centrifugo 的新手，那么可以使用genconfig生成最小配置文件的命令开始
+./centrifugo genconfig
+
+# config.json它在当前目录（默认情况下）中创建一个配置文件，其中包含一些自动生成的选项值.有了配置文件，您终于可以运行 Centrifugo 实例了
+./centrifugo --config=config.json
+
+
+
+# 如果在 macOS 上进行开发，那么可以通过以下方式安装 Centrifugo brew
+brew tap centrifugal/centrifugo
+brew install centrifugo
+
+```
+
+二、本机启用管理 Web 界面
+
+```bash
+# 方式1：使用内置的管理 Web 界面启动 Centrifugo
+./centrifugo --config=config.json --admin
+
+
+# 方式二： 修改 config.json 文件的 "admin": true 来启用管理 Web 界面，然后仅使用配置文件的路径运行 Centrifugo
+# 修改 config.json 文件
+{
+  "token_hmac_secret_key": "bbe7d157-a253-4094-9759-06a8236543f9",
+  "admin": true,
+  "admin_password": "d0683813-0916-4c49-979f-0e08a686b727",
+  "admin_secret": "4e9eafcf-0120-4ddd-b668-8dc40072c78e",
+  "api_key": "d7627bb6-2292-4911-82e1-615c0ed3eebb",
+  "allowed_origins": []
+}
+# 然后仅使用配置文件的路径运行 Centrifugo，使用 config.json 文件的 admin_password 值登录
+./centrifugo --config=config.json
+```
+
+三、本机实现一个 centrifugo 实例
+1、为客户端提供一个有效的 JWT（JSON Web Token）进行验证
+
+```bash
+./centrifugo gentoken -u 123722
+```
+
+2、准备一个静态 html
+
+```bash
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>test centrifugo</title>
+</head>
+<body>
+  <div id="counter">-</div>
+  <script src="https://unpkg.com/centrifuge@4.1.3/dist/centrifuge.js"></script>
+  <script type="text/javascript">
+  const container = document.getElementById('counter');
+
+    const centrifuge = new Centrifuge("ws://localhost:8000/connection/websocket", {
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE2ODQxMTk4MTUsImlhdCI6MTY4MzUxNTAxNX0.Qxc1ckPXHcIwSkLOHjidME8yy8NrbHWce4icQSmtO-Y"
+    });
+
+    centrifuge.on('connecting', function (ctx) {
+
+      console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+
+    }).on('connected', function (ctx) {
+
+      console.log(`connected over ${ctx.transport}`);
+
+    }).on('disconnected', function (ctx) {
+
+      console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+
+    }).connect();
+
+    const sub = centrifuge.newSubscription("channel");
+
+    sub.on('publication', function (ctx) {
+
+      container.innerHTML = ctx.data.value;
+      document.title = ctx.data.value;
+
+    }).on('subscribing', function (ctx) {
+
+      console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
+
+    }).on('subscribed', function (ctx) {
+
+      console.log('subscribed', ctx);
+
+    }).on('unsubscribed', function (ctx) {
+
+      console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
+
+    }).subscribe();
+  </script>
+</body>
+</html>
+```
+
+3、修改 config.json 文件， 配置 allowed_origins 允许 Web 浏览器的请求， 配置 allow_subscribe_for_client 允许所有经过身份验证的客户端订阅任何频道
+
+```bash
+{
+  "token_hmac_secret_key": "dc783ecd-961a-411f-9fe6-e34839cfff54",
+  "admin": true,
+  "admin_password": "8df644dd-d49d-471a-9da2-bfff75c547b6",
+  "admin_secret": "c270ac3a-64f7-4141-a3ef-ffb9f8c9880d",
+  "api_key": "2e4c5a31-a04c-4e17-9039-da717fa3d99e",
+  "allowed_origins": ["http://localhost:3000"],
+  "allow_subscribe_for_client": true
+}
+
+```
+
+4、运行 Centrifugo 服务器
+
+```bash
+./centrifugo --config=config.json
+```
+
+5、启动一个简单的静态文件 Web 服务器, 该服务器在端口 3000 上为当前目录提供服务。确保仍在运行 Centrifugo 服务器时，打开 http://localhost:3000/
+
+```bash
+./centrifugo serve --port 3000
+```
