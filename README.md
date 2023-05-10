@@ -61,3 +61,20 @@ UI:
     |-- README.md 项目说明
     |-- vue.config.js vue-cli 脚手架配置文件
 ```
+
+## 适配
+
+```bash
+# 安装 postcss-pxtorem
+npm install postcss postcss-pxtorem --save-dev
+
+# 项目根目录下新建 postcss.config.js 文件
+module.exports = {
+  plugins: [
+    require('postcss-pxtorem')({
+      rootValue: 1,
+      propList: ['*', '!font-size'] //字体不需要缩放
+    })
+  ]
+}
+```

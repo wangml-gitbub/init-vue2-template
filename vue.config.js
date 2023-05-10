@@ -15,11 +15,36 @@ module.exports = {
     open: false,
     allowedHosts: 'all',
     proxy: {
-      [process.env.VUE_APP_BASE_URL]: {
-        target: process.env.VUE_APP_REQUEST_URL,
+      [process.env.VUE_APP_AUTH_URL]: {
+        target: process.env.VUE_APP_AUTH_URL,
+        ws: true,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_URL]: ''
+          [process.env.VUE_APP_AUTH_URL]: ''
+        }
+      },
+      [process.env.VUE_APP_LOBBY_URL]: {
+        target: process.env.VUE_APP_LOBBY_URL,
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          [process.env.VUE_APP_LOBBY_URL]: ''
+        }
+      },
+      [process.env.VUE_APP_SPACE_URL]: {
+        target: process.env.VUE_APP_SPACE_URL,
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          [process.env.VUE_APP_SPACE_URL]: ''
+        }
+      },
+      [process.env.VUE_APP_SERVICE_URL]: {
+        target: process.env.VUE_APP_SERVICE_URL,
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_SERVICE_URL]: ''
         }
       }
     }
