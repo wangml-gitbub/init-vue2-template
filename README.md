@@ -87,14 +87,14 @@ module.exports = {
 ```scss
 @font-face {
   font-family: 'zidingyi';
-  src: url('@/assects/font/zdy.ttf');
+  src: url('@/assets/font/zdy.ttf');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'aaa';
-  src: url('@/assects/font/aaa.ttf');
+  src: url('@/assets/font/aaa.ttf');
   font-weight: normal;
   font-style: normal;
 }
