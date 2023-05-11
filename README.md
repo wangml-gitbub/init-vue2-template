@@ -77,6 +77,48 @@ module.exports = {
     })
   ]
 }
+
+
+
+# 入口文件 main.js
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
+import { windowResize, setDomFontSizeByDevice } from './utils/common'
+
+
+setDomFontSizeByDevice()
+windowResize()
+Vue.config.productionTip = false
+
+new Vue({
+  router,
+  store,
+  render: (h) => h(App)
+}).$mount('#app')
+
+
+
+
+# common.js 文件
+// 根据不同设备（PC or 手机）来设置根节点 fontsize
+export function setDomFontSizeByDevice() {
+  const isMobileDev = isMobile()
+  let fontsize = ''
+  let width = document.documentElement.clientWidth || document.body.clientWidth
+  if (isMobileDev) {
+    fontsize = width / 375 + 'px'
+  } else {
+    fontsize = width / width + 'px'
+  }
+  document.getElementsByTagName('html')[0].style['font-size'] = fontsize
+}
+
+export function windowResize() {
+  let setDomFontSizeDebounce = _.debounce(setDomFontSizeByDevice, 400)
+  window.addEventListener('resize', setDomFontSizeDebounce)
+}
 ```
 
 ## 自定义字体包引入
@@ -87,14 +129,14 @@ module.exports = {
 ```scss
 @font-face {
   font-family: 'zidingyi';
-  src: url('@/assets/font/zdy.ttf');
+  src: url('@/assects/font/zdy.ttf');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'aaa';
-  src: url('@/assets/font/aaa.ttf');
+  src: url('@/assects/font/aaa.ttf');
   font-weight: normal;
   font-style: normal;
 }
