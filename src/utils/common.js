@@ -106,3 +106,18 @@ export function isVerticalOrientation() {
     return false
   }
 }
+
+// url querystring 参数获取
+export function getUrlQueryString(url){
+  if(!url) return {}
+
+  let queryString = url.slice(url.indexOf('?'))
+
+  let qsObject = {}
+  queryString.split('&').forEach(item => {
+    let valueKey = item.split('=')
+    qsObject[valueKey[0]] = valueKey[1]
+  })
+
+  return qsObject
+}
