@@ -124,7 +124,7 @@ export function windowResize() {
 ## 自定义字体包引入
 
 1、UI 提供 . ttf / .otf 字体包，放置工程文件 assets/fonts 文件夹中
-2、工程文件 style 文件夹中新建 font.scss
+2、工程项目 style 文件夹中新建 font.scss
 
 ```scss
 @font-face {
