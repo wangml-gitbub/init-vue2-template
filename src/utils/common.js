@@ -121,3 +121,57 @@ export function getUrlQueryString(url){
 
   return qsObject
 }
+
+// 防抖
+export function debounce(func, delay) {
+
+  // let timer
+  // return function () {
+  //   if(timer) {
+  //     clearTimeout(timer)
+  //   }
+  //   timer =  setTimeout(() => {
+  //     func()
+  //   }, delay)
+  // }
+
+
+
+  let timer = null
+  return function() {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, arguments)
+      timer = null
+    }, delay)
+  }
+
+
+}
+
+// 节流
+export function throttle(func, delay){
+
+  // let timer
+  // return function() {
+  //   if(timer) return
+  //   timer = setTimeout(() => {
+  //     func()
+  //     timer = null
+  //   }, delay)
+  // }
+
+
+  let timer = null
+  return function() {
+    if(timer) return
+    timer = setTimeout(() => {
+      func.apply(this, arguments)
+      timer = null
+    }, delay)
+  }
+
+
+}

@@ -311,8 +311,221 @@ brew install centrifugo
 ./centrifugo --config=config.json
 ```
 
-5、启动一个简单的静态文件 Web 服务器, 该服务器在端口 3000 上为当前目录提供服务。确保仍在运行 Centrifugo 服务器时，打开 http://localhost:3000/
+5、启动一个简单的静态文件 Web 服务器, 该服务器在端口 3000 上为当前目录提供服务。确保仍在运行 Centrifugo 服务器时，打开 [http://localhost:3000/
+](http://localhost:3000/
+)
 
 ```bash
 ./centrifugo serve --port 3000
+```
+
+## git changelog 自动生成
+
+1、安装依赖
+
+```bash
+npm install conventional-changelog conventional-changelog-cli --save-dev
+
+or
+
+yarn add conventional-changelog conventional-changelog-cli --save-dev
+```
+
+2、添加脚本：package.json 文件中的 scripts 增加 changelog 命令
+
+```bash
+{
+  "scripts": {
+     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+  }
+}
+```
+
+3、生成 CHANGELOG.md 文件: 直接运行下面的命令即可
+
+```bash
+npm run changelog
+```
+
+## 自定义的 git changelog 自动生成
+
+1、安装依赖
+
+```bash
+npm install conventional-changelog conventional-changelog-cli conventional-changelog-custom-config compare-func --save-dev
+```
+
+2、项目根目录新建  changelog-option.js 文件，自定义配置 changelog 的内容。[可参考这里](https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog-eslint/writer-opts.js)
+
+```js
+const compareFunc = require('compare-func')
+module.exports = {
+  writerOpts: {
+    transform: (commit, context) => {
+      let discard = true
+      const issues = []
+
+      commit.notes.forEach(note => {
+        note.title = 'BREAKING CHANGES'
+        discard = false
+      })
+      if (commit.type === 'feat') {
+        commit.type = '✨ Features | 新功能'
+      } else if (commit.type === 'fix') {
+        commit.type = '🐛 Bug Fixes | Bug 修复'
+      } else if (commit.type === 'perf') {
+        commit.type = '⚡ Performance Improvements | 性能优化'
+      } else if (commit.type === 'revert' || commit.revert) {
+        commit.type = '⏪ Reverts | 回退'
+      } else if (discard) {
+        return
+      } else if (commit.type === 'docs') {
+        commit.type = '📝 Documentation | 文档'
+      } else if (commit.type === 'style') {
+        commit.type = '💄 Styles | 风格'
+      } else if (commit.type === 'refactor') {
+        commit.type = '♻ Code Refactoring | 代码重构'
+      } else if (commit.type === 'test') {
+        commit.type = '✅ Tests | 测试'
+      } else if (commit.type === 'build') {
+        commit.type = '👷‍ Build System | 构建'
+      } else if (commit.type === 'ci') {
+        commit.type = '🔧 Continuous Integration | CI 配置'
+      } else if (commit.type === 'chore') {
+        commit.type = '🎫 Chores | 其他更新'
+      }
+
+
+      if (commit.scope === '*') {
+        commit.scope = ''
+      }
+      if (typeof commit.hash === 'string') {
+        commit.hash = commit.hash.substring(0, 7)
+
+      }
+      if (typeof commit.subject === 'string') {
+        let url = context.repository
+          ? `${context.host}/${context.owner}/${context.repository}`
+          : context.repoUrl
+        if (url) {
+          url = `${url}/issues/`
+          // Issue URLs.
+          commit.subject = commit.subject.replace(/#([0-9]+)/g, (_, issue) => {
+            issues.push(issue)
+            return `[#${issue}](${url}${issue})`
+          })
+        }
+        if (context.host) {
+          // User URLs.
+          commit.subject = commit.subject.replace(/\B@([a-z0-9](?:-?[a-z0-9/]){0,38})/g, (_, username) => {
+            if (username.includes('/')) {
+              return `@${username}`
+            }
+
+            return `[@${username}](${context.host}/${username})`
+          })
+        }
+      }
+
+      // remove references that already appear in the subject
+      commit.references = commit.references.filter(reference => {
+        if (issues.indexOf(reference.issue) === -1) {
+          return true
+        }
+
+        return false
+      })
+      return commit
+    },
+    groupBy: 'type',
+    commitGroupsSort: 'title',
+    commitsSort: ['scope', 'subject'],
+    noteGroupsSort: 'title',
+    notesSort: compareFunc
+  }
+}
+```
+
+3、添加脚本：package.json 文件中的 scripts 增加 changelog 命令
+
+```bash
+{
+  "scripts": {
+    "changelog": "conventional-changelog -p custom-config -i CHANGELOG.md -s -n ./changelog-option.js -w -r 0"
+  }
+}
+```
+
+4、生成 CHANGELOG.md 文件: 直接运行下面的命令即可
+
+```bash
+npm run changelog
+```
+
+参考：
+[https://blog.csdn.net/qq_41887214/article/details/124183764](https://blog.csdn.net/qq_41887214/article/details/124183764)
+[https://juejin.cn/post/6844903888072654856](https://juejin.cn/post/6844903888072654856)
+
+## 防抖 & 节流
+
+闭包的典型应用就是函数防抖和节流
+
+1、函数防抖：指触发事件后，在 n 秒后只能执行一次，如果在 n 秒内又触发了事件，则会重新计算函数的执行时间。简单的说，当一个动作连续触发，只执行最后一次。
+
+```js
+// 简单实现
+export function debounce(func, delay) {
+  let timer
+  return function () {
+    if(timer) {
+      clearTimeout(timer)
+    }
+    timer =  setTimeout(() => {
+      func()
+    }, delay)
+  }
+}
+
+ // 有外部传参
+export function debounce(func, delay) {
+  let timer = null
+  return function() {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, arguments)
+      timer = null
+    }, delay)
+  }
+}
+```
+
+2、函数节流：限制一个函数在一定时间内只能执行一次
+
+```js
+// 简单实现
+export function throttle(func, delay){
+  let timer
+  return function() {
+    if(timer) return
+    timer = setTimeout(() => {
+      func()
+      timer = null
+    }, delay)
+  }
+}
+
+
+// 有外部传参
+export function throttle(func, delay){
+  let timer = null
+  return function() {
+    if(timer) return
+    timer = setTimeout(() => {
+      func.apply(this, arguments)
+      timer = null
+    }, delay)
+  }
+}
 ```
