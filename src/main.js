@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 import { windowResize, setDomFontSizeByDevice } from './utils/common'
 import './utils/ant-design.js'
+import './styles/font.scss'
+
 setDomFontSizeByDevice()
 windowResize()
 Vue.config.productionTip = false

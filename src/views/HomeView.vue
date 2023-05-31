@@ -2,7 +2,8 @@
   <div>
     <!-- <img alt="Vue logo" src="../assets/logo.png" /> -->
     <HelloWorld msg="Welcome to Your Vue.js App" />
-    home
+    <div class="font-MiSans-Regular">MiSans-Regular 字体</div>
+    <div class="font-MiSans-Heavy">MiSans-Heavy 字体</div>
 
     <div class="img-boxs">
       <img src="item.src" v-for="item in imgList" :key="item.id" />
@@ -110,14 +111,12 @@ export default {
   gap: 5px;
 }
 
-// .dddd {
-//   font-size: 14px;
-//   font-family: 'zidingyi';
-//   color: #555;
-// }
-
-// .dddd {
-//   font-family: 'aaa';
-//   color: #555;
-// }
+.font-MiSans-Regular {
+  font-family: MiSans-Regular;
+  color: #555;
+}
+.font-MiSans-Heavy {
+  font-family: MiSans-Heavy;
+  color: #555;
+}
 </style>

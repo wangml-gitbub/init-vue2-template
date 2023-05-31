@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie' // npm install js-cookie 'js-cookie' --save
 
-export function setToken(value, expires = 1000000000) {
+export function setToken(value, expires = 3600000) {
   Cookies.set('accessToken', value, { expires })
 }
 
@@ -18,7 +18,7 @@ export function hasToken() {
   return true
 }
 
-export function setSessionToken(value, expires = 1000000000) {
+export function setSessionToken(value, expires = 3600000) {
   Cookies.set('sessionToken', value, { expires })
 }
 

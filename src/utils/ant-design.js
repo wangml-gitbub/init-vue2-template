@@ -49,7 +49,8 @@ import {
   message,
   notification,
   Pagination,
-  Empty
+  Empty,
+  Collapse
 } from 'ant-design-vue' // npm i --save ant-design-vue
 import '@/styles/antd.css'
 
@@ -104,6 +105,7 @@ Vue.use(Space)
 Vue.use(Pagination)
 Vue.use(Empty)
 Vue.use(FormModel)
+Vue.use(Collapse)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

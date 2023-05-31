@@ -1,3 +1,4 @@
+import { escape } from 'core-js/fn/regexp'
 import _ from 'lodash'
 
 // 日期格式化
@@ -174,4 +175,22 @@ export function throttle(func, delay){
   }
 
 
+}
+
+// 获取字符长度
+export function getBt(str){
+  let char = str.replace(/[^\x00-\xff]/g, '***');
+  return char.length;
+}
+
+// utf8 转 base64
+export function utf8ToBase64(str) {
+  return window.btoa(unescape(encodeURIComponent(str)))
+  // return btoa(encodeURIComponent(str))
+}
+
+// base64 转 utf8
+export function base64ToUtf8(str) {
+  return decodeURIComponent(escape(window.atob(str)))
+  // return decodeURIComponent(escape(str))
 }

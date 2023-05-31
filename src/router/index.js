@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import { whiteList } from '@/utils/constants'
-// import { hasToken } from '@/utils/auth'
+import { whiteListPath } from '@/utils/constants'
+import { hasToken } from '@/utils/auth'
 import { isMobile, isVerticalOrientation, isMobileWeChat } from '@/utils/common'
+import store from '@/store'
+import { message } from 'ant-design-vue'
+// import { getUserApi } from '@/api/auth'
 
 console.log(isMobile(), isVerticalOrientation(), isMobileWeChat())
 Vue.use(VueRouter)
@@ -51,10 +54,23 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // if (!hasToken && !whiteList.includes(to.path)) {
-  //   console.log('token 过期，请重新登录')
-  //   next('/login')
-  // }
+  if (!hasToken() && !whiteListPath.includes(to.path)) {
+    message.error('token 过期，请重新登录')
+    next('/login')
+  } else {
+    if (!store.state.userName) {
+      // 获取用户信息
+      // let data = await getUserApi()
+      // this.$store.dispatch('setUserName', data.id)
+      // this.$store.dispatch('setNickName', data.nick_name)
+      // localStorage.setItem('userName', data.id)
+      // localStorage.setItem('nickName', data.nick_name)
+
+      store.dispatch('setUserName', localStorage.getItem('userName'))
+      store.dispatch('setNickName', localStorage.getItem('nickName'))
+      console.log(323)
+    }
+  }
 
   next()
 })

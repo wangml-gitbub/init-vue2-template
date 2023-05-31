@@ -45,7 +45,7 @@ axiosInstance.interceptors.response.use(
     // if (response.data.code === 200) {
     //   return response.data
     // }
-    return response.data
+    return Promise.resolve(response.data)
   },
   (error) => {
     // ERR_NETWORK

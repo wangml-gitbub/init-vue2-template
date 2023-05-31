@@ -1,17 +1,18 @@
 import { request } from '@/utils/axios.js'
-import { lobbyUrl } from '@/utils/config'
+
+const lobbyServiceUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_LOBBY_URL : process.env.VUE_APP_LOBBY_API
 
 export const createLobbyApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/create',
+    url: lobbyServiceUrl + '/v1/create',
     data: params
   })
 }
 export const queryPublicLobbiesApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/query',
+    url: lobbyServiceUrl + '/v1/query',
     data: params
   })
 }
@@ -19,7 +20,7 @@ export const queryPublicLobbiesApi = (params) => {
 export const joinByCodeApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/joinbycode',
+    url: lobbyServiceUrl + '/v1/joinbycode',
     data: params
   })
 }
@@ -27,7 +28,7 @@ export const joinByCodeApi = (params) => {
 export const joinByIdApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/' + params.lobbyId + '/join',
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId + '/join',
     data: params
   })
 }
@@ -35,7 +36,7 @@ export const joinByIdApi = (params) => {
 export const createOrJoinByIdApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/' + params.lobbyId + '/createorjoin',
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId + '/createorjoin',
     data: params
   })
 }
@@ -43,14 +44,14 @@ export const createOrJoinByIdApi = (params) => {
 export const reconnectApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/' + params.lobbyId + '/reconnect'
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId + '/reconnect'
   })
 }
 
 export const quickJoinApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/quickjoin',
+    url: lobbyServiceUrl + '/v1/quickjoin',
     data: params
   })
 }
@@ -58,21 +59,21 @@ export const quickJoinApi = (params) => {
 export const getLobbyDetailApi = (params) => {
   return request({
     method: 'get',
-    url: lobbyUrl + '/v1/' + params.lobbyId
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId
   })
 }
 
 export const deleteLobbyApi = (params) => {
   return request({
     method: 'delete',
-    url: lobbyUrl + '/v1/' + params.lobbyId
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId
   })
 }
 
 export const updateLobbyDataApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/' + params.lobbyId,
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId,
     data: params
   })
 }
@@ -80,14 +81,14 @@ export const updateLobbyDataApi = (params) => {
 export const deleteLobbyPlayerApi = (params) => {
   return request({
     method: 'delete',
-    url: lobbyUrl + '/v1/' + params.lobbyId + '/players/' + params.playerId
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId + '/players/' + params.playerId
   })
 }
 
 export const updateLobbyPlayerDataApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/' + params.lobbyId + '/players/' + params.playerId,
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId + '/players/' + params.playerId,
     data: params
   })
 }
@@ -95,7 +96,7 @@ export const updateLobbyPlayerDataApi = (params) => {
 export const bulkUpdateApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/' + params.lobbyId + '/bulkupdate',
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId + '/bulkupdate',
     data: params
   })
 }
@@ -103,14 +104,14 @@ export const bulkUpdateApi = (params) => {
 export const heartbeatLobbyApi = (params) => {
   return request({
     method: 'post',
-    url: lobbyUrl + '/v1/' + params.lobbyId + '/heartbeat'
+    url: lobbyServiceUrl + '/v1/' + params.lobbyId + '/heartbeat'
   })
 }
 
 export const getPlayerJoinedLobbiesApi = (params) => {
   return request({
     method: 'get',
-    url: lobbyUrl + '/v1/joined',
+    url: lobbyServiceUrl + '/v1/joined',
     params
   })
 }
@@ -118,7 +119,7 @@ export const getPlayerJoinedLobbiesApi = (params) => {
 export const getPlayerHostedLobbiesApi = (params) => {
   return request({
     method: 'get',
-    url: lobbyUrl + '/v1/hosted',
+    url: lobbyServiceUrl + '/v1/hosted',
     params
   })
 }

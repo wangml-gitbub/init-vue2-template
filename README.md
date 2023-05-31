@@ -1,4 +1,4 @@
-# vue2-init
+# 项目说明
 
 ## 一、技术栈
 
@@ -15,10 +15,11 @@ UI:
 
 ## 三、开发命令
 
-安装依赖 `npm install`
-项目启动 `npm run serve`
-代码打包 `npm run build`
-代码修复 `npm run lint`
+1. 安装依赖 `npm install`
+2. 项目启动 `npm run serve`
+3. 代码打包 `npm run build`
+4. 代码修复 `npm run lint`
+5. CHANGELOG.md 日志生成 `npm run changelog`
 
 ## 六、代码基础架构说明
 
@@ -526,6 +527,167 @@ export function throttle(func, delay){
       func.apply(this, arguments)
       timer = null
     }, delay)
+  }
+}
+```
+
+## 锚点
+
+```bash
+1、标签锚点方式
+<a href="#dd1">定位到 id 为 dd1 的元素处</a>
+<div class="box">
+  <p id="dd1">....</p>
+</div> 
+.box {
+  height: 200px;
+  overflow: scroll;
+  scroll-behivor: 'smooth';
+}
+
+
+2、js 方式
+document.getElementById('dd1').scrollIntoView({
+  behavior: 'smooth', // 滚动行为
+  block: 'center' // 滚动后的内容放在视图的位置  top bottom center  
+})
+```
+
+## 向上向下滚动加载
+
+```bash
+<template>
+  <div class="box" @scroll="scrollPage" ref="scrollPage" style="height: 200px;overflow: scroll;">
+    <div v-for="item in list" :key="item.id">...</div>
+  </div>
+</template>
+
+<script>
+import lodash from 'lodash' // npm intall lodash --save-dev
+import { mapState } from 'vuex'
+import { api } from '@/api'
+
+export default{
+  data(){
+    return {
+      list: [], // 待渲染的接口数据
+      scrolldDirection: '', // 滚动方向
+      page: 1, // 页码
+      size: 100, // 分页条数
+      total: 0, // 总条数
+      topPage: 1, // 两页连续数据的顶页页码
+      bottomPage: 1,// 两页连续数据的底页页码
+    }
+  },
+
+  computed: {
+    ...mapState(['list'])
+  },
+
+  methods: {
+    // 滚动事件，确定滚动方向及页码
+    scrollPage: lodash.debounce(function(e){
+      const { scrollTop, clientHeight, scrollHeight } = this.$refs['scrollPage']
+      const direction = scrollTop <= 0 ? 'prev' : 'next'
+
+      if (this.page > 1 && scrollTop == 0 && direction === 'prev' && scrollTop + clientHeight != scrollHeight) {
+        this.page = this.topPage - 1
+        this.scrolldDirection = 'prev'
+      }
+      if (this.page < Math.ceil(this.total / this.size) && this.list.length < this.list.total && scrollTop + clientHeight >= scrollHeight && direction === 'next') {
+        this.page = this.bottomPage + 1
+        this.scrolldDirection = 'next'
+      }
+    }, 50)
+
+
+   // 滚动的时候，连续渲染两页的数据（200 条）；初始化或者点击具体页码的时候，加载这一页的数据（100条）
+    async getData() {
+      this.loading = true
+      let { data } = await api.getList(id, this.page, this.size)
+      this.total = data.total
+
+      // 缓存数据到 vuex 中
+      let listMap = {}
+      listMap[this.page] = data
+      this.$store.commit('SET_LIST_MAP', listMap)
+
+
+      let list
+      if (this.scrolldDirection === 'prev') {
+        list = {
+          nodes: this.list[this.page + 1] ? this.listMap[this.page].concat(...this.listMap[this.page + 1]) : data,
+          total: this.total,
+          reset: false
+        }
+        this.topPage = this.page
+        this.bottomPage = this.page + 1
+        this.$refs['scrollPage'].scrollTop = 100 * 36
+      }
+
+
+      if (this.scrolldDirection === 'next') {
+        list = {
+          nodes: this.listMap[this.page - 1] ? this.listMap[this.page - 1].concat(this.listMap[this.page]) : data,
+          total: this.total,
+          reset: false
+        }
+        this.topPage = this.page - 1
+        this.bottomPage = this.page
+        this.$refs['scrollPage'].scrollTop = 100 * 36 - this.$refs['scrollPage'].clientHeight
+      }
+
+
+      if (!this.scrolldDirection) {
+        list = {
+          nodes: data,
+          total: this.total,
+          reset: false
+        }
+        this.topPage = this.page
+        this.bottomPage = this.page
+        this.$refs['scrollPage'].scrollTop = 10 // 不赋值为0的目的是怕触发再次向上滚动事件
+      } 
+
+      this.$store.commit('SET_LIST_DATA', list)
+
+    }
+
+  }
+}
+</>
+```
+
+## 向下滚动
+
+```bash
+<div class="box">...</div>
+
+import lodash from 'lodash'
+export default {
+  data(){
+    return {
+      page: 1,
+      size: 100,
+      total: 0,
+      list: []
+    }
+  },
+  methods: {
+    scrollFun: lodash.debounce(function(){
+      const { scrollTop, scrollHeight, clientHeight } = this.$refs.box
+
+      if(this.list.length < this.total && scrollTop + clientHeight >= scrollHeight) {
+        this.page++
+        this.getData()
+      }
+
+    }, 50),
+    async getData(){
+      const { data } = await api.getList({page: this.page, size: this.size})
+      this.total = data.total
+      this.list = [...this.list, ...data.rows]
+    }
   }
 }
 ```
